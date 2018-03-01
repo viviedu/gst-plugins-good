@@ -899,20 +899,12 @@ gst_soup_http_src_session_open (GstSoupHTTPSrc * src)
 
   if (!src->session) {
     GST_DEBUG_OBJECT (src, "Creating session");
-    if (src->proxy == NULL) {
-      src->session =
-          soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-          src->user_agent, SOUP_SESSION_TIMEOUT, src->timeout,
-          SOUP_SESSION_SSL_STRICT, src->ssl_strict,
-          SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
-    } else {
-      src->session =
-          soup_session_new_with_options (SOUP_SESSION_PROXY_URI, src->proxy,
-          SOUP_SESSION_TIMEOUT, src->timeout,
-          SOUP_SESSION_SSL_STRICT, src->ssl_strict,
-          SOUP_SESSION_USER_AGENT, src->user_agent,
-          SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
-    }
+    src->session =
+        soup_session_new_with_options (SOUP_SESSION_PROXY_URI, src->proxy,
+        SOUP_SESSION_TIMEOUT, src->timeout,
+        SOUP_SESSION_SSL_STRICT, src->ssl_strict,
+        SOUP_SESSION_USER_AGENT, src->user_agent,
+        SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
 
     if (!src->session) {
       GST_ELEMENT_ERROR (src, LIBRARY, INIT,
