@@ -1053,9 +1053,14 @@ static void
 gst_soup_http_src_authenticate_cb (SoupSession * session, SoupMessage * msg,
     SoupAuth * auth, gboolean retrying, GstSoupHTTPSrc * src)
 {
-  /* Might be from another user of the shared session */
-  if (!GST_IS_SOUP_HTTP_SRC (src) || msg != src->msg)
+  /* removing (msg != src->msg) check as this breaks authentication
+   * original comment stated: "Might be from another user of the shared session"
+   * however, we cannot have a shared session if proxy != NULL (see line:923)
+   * and src->msg is not actually used in the logic below (plus src->msg->status_code == 0)
+   */
+  if (!GST_IS_SOUP_HTTP_SRC (src)) {
     return;
+  }
 
   if (!retrying) {
     /* First time authentication only, if we fail and are called again with retry true fall through */
