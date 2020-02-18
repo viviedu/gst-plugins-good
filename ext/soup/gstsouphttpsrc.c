@@ -953,20 +953,12 @@ gst_soup_http_src_session_open (GstSoupHTTPSrc * src)
       /* We explicitly set User-Agent to NULL here and overwrite it per message
        * to be able to have the same session with different User-Agents per
        * source */
-      if (src->proxy == NULL) {
-        src->session =
-            soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-            NULL, SOUP_SESSION_TIMEOUT, src->timeout,
-            SOUP_SESSION_SSL_STRICT, src->ssl_strict,
-            SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
-      } else {
-        src->session =
-            soup_session_new_with_options (SOUP_SESSION_PROXY_URI, src->proxy,
-            SOUP_SESSION_TIMEOUT, src->timeout,
-            SOUP_SESSION_SSL_STRICT, src->ssl_strict,
-            SOUP_SESSION_USER_AGENT, NULL,
-            SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
-      }
+      src->session =
+          soup_session_new_with_options (SOUP_SESSION_PROXY_URI, src->proxy,
+          SOUP_SESSION_TIMEOUT, src->timeout,
+          SOUP_SESSION_SSL_STRICT, src->ssl_strict,
+          SOUP_SESSION_USER_AGENT, NULL,
+          SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
 
       if (src->session) {
         gst_soup_util_log_setup (src->session, src->log_level,
