@@ -1499,6 +1499,8 @@ gst_soup_http_src_build_message (GstSoupHTTPSrc * src, const gchar * method)
       soup_message_headers_append (src->msg->request_headers, "Cookie",
           *cookie);
     }
+
+    soup_message_disable_feature (src->msg, SOUP_TYPE_COOKIE_JAR);
   }
 
   if (!src->compress)
