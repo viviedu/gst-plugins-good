@@ -950,14 +950,11 @@ gst_soup_http_src_session_open (GstSoupHTTPSrc * src)
     } else {
       GST_DEBUG_OBJECT (src, "Creating session (can share %d)", can_share);
 
-      /* We explicitly set User-Agent to NULL here and overwrite it per message
-       * to be able to have the same session with different User-Agents per
-       * source */
       src->session =
           soup_session_new_with_options (SOUP_SESSION_PROXY_URI, src->proxy,
           SOUP_SESSION_TIMEOUT, src->timeout,
           SOUP_SESSION_SSL_STRICT, src->ssl_strict,
-          SOUP_SESSION_USER_AGENT, NULL,
+          SOUP_SESSION_USER_AGENT, src->user_agent,
           SOUP_SESSION_TLS_INTERACTION, src->tls_interaction, NULL);
 
       if (src->session) {
@@ -1460,28 +1457,6 @@ gst_soup_http_src_build_message (GstSoupHTTPSrc * src, const gchar * method)
     GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ,
         ("Error parsing URL."), ("URL: %s", src->location));
     return FALSE;
-  }
-
-  /* Duplicating the defaults of libsoup here. We don't want to set a
-   * User-Agent in the session as each source might have its own User-Agent
-   * set */
-  if (!src->user_agent || !*src->user_agent) {
-    gchar *user_agent =
-        g_strdup_printf ("libsoup/%u.%u.%u", soup_get_major_version (),
-        soup_get_minor_version (), soup_get_micro_version ());
-    soup_message_headers_append (src->msg->request_headers, "User-Agent",
-        user_agent);
-    g_free (user_agent);
-  } else if (g_str_has_suffix (src->user_agent, " ")) {
-    gchar *user_agent = g_strdup_printf ("%slibsoup/%u.%u.%u", src->user_agent,
-        soup_get_major_version (),
-        soup_get_minor_version (), soup_get_micro_version ());
-    soup_message_headers_append (src->msg->request_headers, "User-Agent",
-        user_agent);
-    g_free (user_agent);
-  } else {
-    soup_message_headers_append (src->msg->request_headers, "User-Agent",
-        src->user_agent);
   }
 
   if (!src->keep_alive) {
