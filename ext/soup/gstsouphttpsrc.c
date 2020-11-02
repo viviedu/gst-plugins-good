@@ -2119,6 +2119,26 @@ gst_soup_http_src_set_proxy (GstSoupHTTPSrc * src, const gchar * uri)
     g_free (new_uri);
   }
 
+  if (src->proxy == NULL) {
+    return FALSE;
+  }
+
+  if (soup_uri_get_user (src->proxy) != NULL) {
+    if (src->proxy_id) {
+      g_free (src->proxy_id);
+      src->proxy_id = NULL;
+    }
+    src->proxy_id = g_strdup (soup_uri_get_user (src->proxy));
+  }
+
+  if (soup_uri_get_password (src->proxy) != NULL) {
+    if (src->proxy_pw) {
+      g_free (src->proxy_pw);
+      src->proxy_pw = NULL;
+    }
+    src->proxy_pw = g_strdup (soup_uri_get_password (src->proxy));
+  }
+
   return (src->proxy != NULL);
 }
 
